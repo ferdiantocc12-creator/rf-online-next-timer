@@ -50,7 +50,7 @@
                 <i class="fa-solid fa-hourglass-half mr-2"></i>RF ONLINE NEXT
             </h1>
             <p class="text-gray-300">Novus & Battleground Boss Timer • Zona Waktu: <span class="font-semibold text-yellow-300">WIB (UTC+7)</span></p>
-            <p class="text-xs text-gray-400 mt-1">Data dikelola dari server Discord</p>
+            <p class="text-xs text-gray-400 mt-1">Disesuaikan dengan jadwal spawn in-game</p>
         </div>
 
         <!-- Reset Harian -->
@@ -67,7 +67,7 @@
         </div>
 
         <footer class="text-center text-gray-500 text-sm mt-12 pt-4 border-t border-gray-800">
-            © 2026 RF Online Next Boss Timer • Data dikelola dari Discord
+            © 2026 RF Online Next Boss Timer • Jadwal sinkron dengan in-game
         </footer>
     </div>
 
@@ -76,7 +76,7 @@
         const DATABASE_URL = "https://raw.githubusercontent.com/ferdiantocc12-creator/rf-online-next-timer/main/database.json";
         const TIMEZONE = "Asia/Jakarta";
 
-        // ✅ Daftar Boss + Link Gambar
+        // ✅ Daftar Boss + Jadwal SESUAI IN-GAME
         const JADWAL_TETAP = [
             {
                 "nama_grup": "🟢 NOVUS BOSS GROUP A",
@@ -110,11 +110,11 @@
                     {"nama": "Prime Draco", "level": 62, "lokasi": "Fallen Temple", "gambar": "https://i.imgur.com/OuE2Eci.png"}
                 ]
             },
-            // ✅ BOSS BARU - DUNGEON BOSS
+            // ✅ DUNGEON BOSS
             {
                 "nama_grup": "🏰 DUNGEON BOSS - SECRET NEMESIS",
                 "waktu": ["21:00"],
-                "hari": [1, 6], // 1 = Senin, 6 = Sabtu
+                "hari": [1, 6],
                 "keterangan": "Setiap Senin & Sabtu",
                 "warna": "dungeon",
                 "daftar": [
@@ -123,12 +123,12 @@
                     {"nama": "Rhamnousia", "level": 109, "lokasi": "Secret Nemesis Base 5F", "gambar": "https://i.imgur.com/KDU4VHZ.png"}
                 ]
             },
-            // ✅ BOSS BARU - WORLD BOSS SESUAI JADWAL
+            // ✅ WORLD BOSS - JADWAL SESUAI IN-GAME
             {
                 "nama_grup": "🌍 WORLD BOSS - VRITRA & IGNA VRITRA",
-                "waktu": ["12:00", "20:00", "23:00"],
-                "hari": [1, 4, 0], // 1=Senin, 4=Kamis, 0=Minggu
-                "keterangan": "Setiap Senin, Kamis, Minggu",
+                "waktu": ["09:50", "17:50", "20:50"],
+                "hari": [1, 4, 0], // Senin, Kamis, Minggu
+                "keterangan": "Setiap Senin, Kamis, Minggu • 09:50, 17:50, 20:50 WIB",
                 "warna": "worldboss",
                 "daftar": [
                     {"nama": "Vritra", "level": 115, "lokasi": "Novus Central Plains", "gambar": "https://i.imgur.com/BDMcy7n.png"},
@@ -137,9 +137,9 @@
             },
             {
                 "nama_grup": "🌍 WORLD BOSS - GLEBA & BLITA GLEBA",
-                "waktu": ["12:00", "20:00", "23:00"],
-                "hari": [2, 5, 0], // 2=Selasa, 5=Jumat, 0=Minggu
-                "keterangan": "Setiap Selasa, Jumat, Minggu",
+                "waktu": ["09:50", "17:50", "20:50"],
+                "hari": [2, 5, 0], // Selasa, Jumat, Minggu
+                "keterangan": "Setiap Selasa, Jumat, Minggu • 09:50, 17:50, 20:50 WIB",
                 "warna": "worldboss",
                 "daftar": [
                     {"nama": "Gleba", "level": 121, "lokasi": "Ancient Forest", "gambar": "https://i.imgur.com/LtCSpSf.png"},
@@ -148,9 +148,9 @@
             },
             {
                 "nama_grup": "🌍 WORLD BOSS - STONE WORM",
-                "waktu": ["12:00", "20:00", "23:00"],
-                "hari": [3, 6, 0], // 3=Rabu, 6=Sabtu, 0=Minggu
-                "keterangan": "Setiap Rabu, Sabtu, Minggu",
+                "waktu": ["09:50", "17:50", "20:50"],
+                "hari": [3, 6, 0], // Rabu, Sabtu, Minggu
+                "keterangan": "Setiap Rabu, Sabtu, Minggu • 09:50, 17:50, 20:50 WIB",
                 "warna": "worldboss",
                 "daftar": [
                     {"nama": "Stone Worm", "level": 127, "lokasi": "Desert Abyss", "gambar": "https://i.imgur.com/rSjau1l.png"}
@@ -183,7 +183,6 @@
                     {"nama": "Eldrige", "level": 81, "lokasi": "Saufa Colony", "gambar": "https://i.imgur.com/IUqPxE1.png"}
                 ]
             },
-            // ✅ BOSS BARU - BATTLEGROUND
             {
                 "nama_grup": "⚔️ CRAG ORBITAL LIFT",
                 "interval_jam": 72,
@@ -243,6 +242,7 @@
                 });
         }
 
+        // ✅ Fungsi hitung waktu disesuaikan persis jadwal
         function hitungWaktuTetap(waktuStr, hariDaftar = null) {
             const sekarang = new Date(new Date().toLocaleString("en-US", {timeZone: TIMEZONE}));
             const [jam, menit] = waktuStr.split(":").map(Number);
@@ -250,10 +250,11 @@
             target.setHours(jam, menit, 0, 0);
 
             if (hariDaftar) {
-                const hariSekarang = sekarang.getDay(); // JS: 0=Minggu, 1=Senin,...6=Sabtu
+                const hariSekarang = sekarang.getDay();
                 let selisihHari = 0;
                 let ditemukan = false;
-                for (let i = 0; i < 7; i++) {
+
+                for (let i = 0; i < 8; i++) {
                     const cekHari = (hariSekarang + i) % 7;
                     if (hariDaftar.includes(cekHari)) {
                         selisihHari = i;
@@ -261,6 +262,7 @@
                         break;
                     }
                 }
+
                 if (ditemukan) {
                     target.setDate(target.getDate() + selisihHari);
                     if (selisihHari === 0 && sekarang >= target) {
@@ -270,6 +272,7 @@
             } else {
                 if (sekarang >= target) target.setDate(target.getDate() + 1);
             }
+
             return target;
         }
 
@@ -279,6 +282,7 @@
             return new Date(waktuKalah.getTime() + jamInterval * 3600000);
         }
 
+        // ✅ Format tampilan sama persis dengan in-game
         function formatWaktu(tanggal) {
             if (!tanggal) return "⏳ Belum tercatat";
             const sekarang = new Date(new Date().toLocaleString("en-US", {timeZone: TIMEZONE}));
@@ -291,7 +295,7 @@
             const menit = Math.floor((selisih % 3600000) / 60000);
             const detik = Math.floor((selisih % 60000) / 1000);
 
-            if (hari > 0) return `${hari}h ${jam.toString().padStart(2, '0')}:${menit.toString().padStart(2, '0')}:${detik.toString().padStart(2, '0')}`;
+            if (hari > 0) return `${hari}d ${jam.toString().padStart(2, '0')}:${menit.toString().padStart(2, '0')}:${detik.toString().padStart(2, '0')}`;
             return `${jam.toString().padStart(2, '0')}:${menit.toString().padStart(2, '0')}:${detik.toString().padStart(2, '0')}`;
         }
 
@@ -302,7 +306,7 @@
             let html = "";
 
             JADWAL_TETAP.forEach(grup => {
-                const keterangan = grup.keterangan ? `• ${grup.keterangan} ${grup.waktu.join(" & ")} WIB` : `• ${grup.waktu.join(" & ")} WIB`;
+                const keterangan = grup.keterangan ? `• ${grup.keterangan}` : `• ${grup.waktu.join(" & ")} WIB`;
                 html += `
                 <div class="bg-gray-800/60 rounded-xl p-5 border-l-4 border-${grup.warna} card-shadow">
                     <h2 class="text-xl font-semibold text-${grup.warna} mb-4 flex items-center gap-2">
